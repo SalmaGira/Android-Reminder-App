@@ -61,7 +61,7 @@ public class RemindersDbAdapter {
           query = "insert into " + TABLE_NAME + "(" + COL_CONTENT + " " + COL_IMPORTANT + " )" +
                   " values(" + name + ", " + Boolean.toString(important) + ");";
           mDb.execSQL(query);
-          close();
+//          close();
       }
       catch (Exception e){
 //          Toast.makeText(MainActivity.this, "ERROR "+e.toString(), Toast.LENGTH_SHORT).show();
@@ -72,10 +72,8 @@ public class RemindersDbAdapter {
     }
     //TODO overloaded to take a reminder
     public long createReminder(Reminder reminder) {
-        String query;
         long isInserted = -1;
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_ID, reminder.getId());
         contentValues.put(COL_CONTENT, reminder.getContent());
         contentValues.put(COL_IMPORTANT, reminder.getImportant());
         try {
@@ -94,26 +92,17 @@ public class RemindersDbAdapter {
     public void fetchReminderById(int id) {
        String query;
         Cursor res;
-//       Reminder reminder;
-//        String from[] = { TABLE_NAME, COL_CONTENT };
-//        String where = WordsDB.ID + "=?";
-//        String[] whereArgs = new String[]{index+""};
-//        Cursor cursor = db.query(WordsDB.TermTable, from, where, whereArgs, null, null, null, null);
-//        return cursor;
         try {
             open();
 //            query = "select from " + TABLE_NAME + " where `" + COL_ID + "`= " + id;
 //            res = mDb.rawQuery(query, null);
             res = mDb.rawQuery("select * from " + TABLE_NAME + " where " + COL_ID + " = ?", new String[] {Integer.toString(id)});
-            close();
         }
         catch (Exception e){
             //
         }
 
-       return;
-
-       // rawQuery with where id
+        // rawQuery with where id
     }
 
 
@@ -123,9 +112,9 @@ public class RemindersDbAdapter {
         Cursor res;
 
         open();
-        query = "select " + COL_CONTENT +" from " + TABLE_NAME;
+        query = "select * from " + TABLE_NAME;
         res = mDb.rawQuery(query, null);
-        close();
+//        close();
 
         return res;
         // rawQuery get all
@@ -139,7 +128,6 @@ public class RemindersDbAdapter {
         contentValues.put(COL_CONTENT, reminder.getContent());
         contentValues.put(COL_IMPORTANT, reminder.getImportant());
         mDb.update(TABLE_NAME, contentValues, COL_ID + " = ?", new String[] {Integer.toString(reminder.getId())});
-        close();
         // execSQL
     }
     //TODO implement the function deleteReminderById() to delete a certain reminder given its id
@@ -147,7 +135,6 @@ public class RemindersDbAdapter {
         try {
             open();
             mDb.delete(TABLE_NAME, COL_ID + " = ?", new String[] {Integer.toString(nId)});
-            close();
         }
         catch (Exception e){
             //
@@ -161,7 +148,6 @@ public class RemindersDbAdapter {
             open();
 //            mDb.delete(TABLE_NAME, COL_ID + " = ?", new String[] {Integer.toString(nId)});
             mDb.execSQL("delete from "+ TABLE_NAME);
-            close();
         }
         catch (Exception e){
             //

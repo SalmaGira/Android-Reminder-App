@@ -24,19 +24,30 @@ public class RemindersActivity extends AppCompatActivity {
     String[] StringArray;// = {"Volvo", "BMW", "Ford", "Mazda"};
     RemindersDbAdapter db;
     RemindersSimpleCursorAdapter sc;
-    Reminder reminder;
+    Reminder reminder = new Reminder();
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        db.close();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = new RemindersDbAdapter(this);
 
 
 //        StringArray = db.fetchAllReminders();
         Cursor cursor = db.fetchAllReminders();
-        String preChanged = cursor.getString(cursor.getColumnIndex("content"));//Replace row name with your row name
+        String preChanged = "Add reminders Please";//Replace row name with your row name
+//        if( cursor != null && cursor.moveToFirst() ){
+//            preChanged = cursor.getString(cursor.getColumnIndex("content"));
+//            cursor.close();
+//        }
         StringArray = preChanged.split(",");//Can be changed to parts
-        ArrayAdapter adapter = new ArrayAdapter<String>(this,R.layout.activity_listview,StringArray);
+        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, StringArray);
 
         final ListView listView = (ListView) findViewById(R.id.listView1);
         listView.setAdapter(adapter);
@@ -58,7 +69,7 @@ public class RemindersActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         int id = menuItem.getItemId();
 
-                        switch (id){
+                        switch (id) {
                             case R.id.item1_dialog_custom:
                                 showAlertDialog(1);
                                 break;
@@ -91,7 +102,7 @@ public class RemindersActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         // menu item check handling
-        switch (id){
+        switch (id) {
             case R.id.item1_dialog_custom:
                 // make here the action of new remainder
                 showAlertDialog(0);
@@ -108,7 +119,7 @@ public class RemindersActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showAlertDialog(int i){
+    public void showAlertDialog(int i) {
         View checkBoxView = View.inflate(this, R.layout.checkbox, null);
         final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -150,16 +161,17 @@ public class RemindersActivity extends AppCompatActivity {
                         int isSelected = checkBox.isSelected() ? 1 : 0;
                         reminder.setImportant(isSelected);
 
-                        if (i == 1){
+                        if (i == 1) {
                             // do query of edit
                             db.updateReminder(reminder);
                         } else {
                             // do query of new reminder
                             long isCreated = db.createReminder(reminder);
-                            if (isCreated == -1){
+                            if (isCreated == -1) {
                                 Toast.makeText(RemindersActivity.this, "error creation", Toast.LENGTH_SHORT).show();
                             }
                         }
+                        recreate();
 
                     }
                 }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {

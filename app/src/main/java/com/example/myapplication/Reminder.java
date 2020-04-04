@@ -7,6 +7,8 @@ package com.example.myapplication;
 
 public class Reminder {
 
+    public Reminder() {
+    }
 
     private int mId;
     private String mContent;
