@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,14 +20,23 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class RemindersActivity extends AppCompatActivity {
-    String[] StringArray;// = {"Volvo", "BMW", "Ford", "Mazda"};
-    RemindersDbAdapter db;
-    RemindersSimpleCursorAdapter sc;
-    Reminder reminder = new Reminder();
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
+//import androidx.appcompat.app.AlertDialog;
+//import androidx.appcompat.app.AppCompatActivity;
+
+public class RemindersActivity extends AppCompatActivity {
+    String[] StringArray = {"Volvo", "BMW", "Ford", "Mazda"};
+    RemindersDbAdapter db;
+    Reminder reminder = new Reminder();
+    private ListView remindersList;
+    private RemindersSimpleCursorAdapter listAdapter;
+    MylibmanList adapter;
     @Override
     protected void onStop() {
         super.onStop();
@@ -46,20 +57,40 @@ public class RemindersActivity extends AppCompatActivity {
 //            preChanged = cursor.getString(cursor.getColumnIndex("content"));
 //            cursor.close();
 //        }
-        StringArray = preChanged.split(",");//Can be changed to parts
-        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, StringArray);
+        //data base columns names
+        String[] from = {
+                RemindersDbAdapter.COL_ID,
+                RemindersDbAdapter.COL_CONTENT ,
+                RemindersDbAdapter.COL_IMPORTANT};
+        //reminder view items ids
+        int[] to = {
+                R.id.id_list,
+                R.id.content_list,
+                R.id.important_id};
 
-        final ListView listView = (ListView) findViewById(R.id.listView1);
-        listView.setAdapter(adapter);
+        //listAdapter = new RemindersSimpleCursorAdapter(this,R.layout.reminder_item,cursor,from,to,0);
+        //if it didnt work use this
+        listAdapter = new RemindersSimpleCursorAdapter(this,R.layout.activity_listview,cursor,from,to,0);
+        remindersList = findViewById(R.id.listView1);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ArrayList<HashMap<String, String>> allReminders = new ArrayList<HashMap<String, String>>();
+        adapter=new MylibmanList(this, allReminders);
+        ArrayAdapter<String> itemsAdapter;
+//        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listAdapter, adapter);
+
+        remindersList.setAdapter(listAdapter);
+
+
+        remindersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Toast.makeText(MainActivity.this, StringArray[i], Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+
+                final String selected = ((TextView) view.findViewById(R.id.id_list)).getText().toString();
+                Toast.makeText(RemindersActivity.this, selected, Toast.LENGTH_SHORT).show();
 
                 PopupMenu popup = new PopupMenu(RemindersActivity.this, view);
                 popup.getMenuInflater().inflate(R.menu.dialog_custom, popup.getMenu());
-                Menu menu = popup.getMenu();
+                final Menu menu = popup.getMenu();
                 menu.getItem(0).setTitle("Edit Reminder");
                 menu.getItem(1).setTitle("Delete Reminder");
                 popup.show();
@@ -67,15 +98,19 @@ public class RemindersActivity extends AppCompatActivity {
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        int id = menuItem.getItemId();
-
-                        switch (id) {
+                        int id = reminder.getId();
+//                        AdapterView.AdapterContextMenuInfo info  = (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
+//                        Reminder reminder = (Reminder)listAdapter.getItem(info.position);
+                        id = Integer.parseInt(selected);
+                        switch (menuItem.getItemId()) {
                             case R.id.item1_dialog_custom:
-                                showAlertDialog(1);
+                                Toast.makeText(RemindersActivity.this, "here to edit", Toast.LENGTH_SHORT).show();
+                                showAlertDialog(1,id);
                                 break;
                             case R.id.item2_dialog_custom:
                                 // delete query
-                                db.deleteReminderById(reminder.getId());
+                                Toast.makeText(RemindersActivity.this, "here to delete", Toast.LENGTH_SHORT).show();
+                                db.deleteReminderById(id);
                                 break;
                             default:
                                 break;
@@ -100,12 +135,13 @@ public class RemindersActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
+//        AdapterView.AdapterContextMenuInfo info  = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+//        Reminder reminder = (Reminder)listAdapter.getItem(info.position);
         // menu item check handling
         switch (id) {
             case R.id.item1_dialog_custom:
                 // make here the action of new remainder
-                showAlertDialog(0);
+                showAlertDialog(0,reminder.getId());
                 break;
             case R.id.item2_dialog_custom:
                 // make here the action of exit
@@ -119,7 +155,9 @@ public class RemindersActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showAlertDialog(int i) {
+    public void showAlertDialog(int i,int id) {
+        final int type=i;
+        final int ID=id;
         View checkBoxView = View.inflate(this, R.layout.checkbox, null);
         final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -144,7 +182,7 @@ public class RemindersActivity extends AppCompatActivity {
         layout.addView(checkBoxView);
 
         String title;
-        if (i == 1)
+        if (type == 1)
             title = "Edit Reminder";
         else
             title = "New Reminder";
@@ -156,13 +194,15 @@ public class RemindersActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String reminderContent = editText.getText().toString();
                         Toast.makeText(RemindersActivity.this, reminderContent, Toast.LENGTH_SHORT).show();
-
-                        reminder.setContent(reminderContent);
+                        if (!reminderContent.equals(" "));
+                            reminder.setContent(reminderContent);
+                        reminder.setId(ID);
                         int isSelected = checkBox.isSelected() ? 1 : 0;
                         reminder.setImportant(isSelected);
-
-                        if (i == 1) {
+                        Toast.makeText(RemindersActivity.this, String.valueOf(ID), Toast.LENGTH_SHORT).show();
+                        if (type == 1) {
                             // do query of edit
+
                             db.updateReminder(reminder);
                         } else {
                             // do query of new reminder
@@ -180,5 +220,8 @@ public class RemindersActivity extends AppCompatActivity {
                 dialogInterface.cancel();
             }
         }).show();
+
+//        TextView textView = (TextView)findViewById(R.id.important_id);
+//        textView.setBackgroundColor(Color.parseColor("#FFA500"));
     }
 }

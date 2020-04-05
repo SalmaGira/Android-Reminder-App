@@ -89,20 +89,17 @@ public class RemindersDbAdapter {
     }
 
     //TODO implement the function fetchReminderById() to get a certain reminder given its id
-    public void fetchReminderById(int id) {
-       String query;
-        Cursor res;
-        try {
-            open();
-//            query = "select from " + TABLE_NAME + " where `" + COL_ID + "`= " + id;
-//            res = mDb.rawQuery(query, null);
-            res = mDb.rawQuery("select * from " + TABLE_NAME + " where " + COL_ID + " = ?", new String[] {Integer.toString(id)});
-        }
-        catch (Exception e){
-            //
-        }
-
-        // rawQuery with where id
+    public Reminder fetchReminderById(int id) {
+        System.out.println(String.valueOf(id));
+        open();
+        //Select * from Materials where Title=title AND Course_Code = CourseCode
+        String query="Select * from "+TABLE_NAME +" where "+COL_ID +" = ? ";
+        Cursor reminderCursor= mDb.rawQuery(query,  new String[] {String.valueOf(id)});
+        reminderCursor.moveToFirst();
+        String content=reminderCursor.getString(reminderCursor.getColumnIndex(COL_CONTENT));
+        int important=reminderCursor.getInt(reminderCursor.getColumnIndex(COL_IMPORTANT));
+        Reminder reminder=new Reminder(id,content,important);
+        return reminder;
     }
 
 
@@ -121,7 +118,7 @@ public class RemindersDbAdapter {
     }
 
     //TODO implement the function updateReminder() to update a certain reminder
-    public void updateReminder(com.example.myapplication.Reminder reminder) {
+    public void updateReminder(Reminder reminder) {
         open();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_ID, reminder.getId());

@@ -1,82 +1,109 @@
-//package com.example.myapplication;
-//
-//import android.app.Activity;
-//import android.widget.BaseAdapter;
-//import android.widget.CompoundButton;
-//
-//public class MylibmanList extends BaseAdapter {
-//
-//    private Activity activity;
-//    private ArrayList<HashMap<String, String>> data;
-//    private static LayoutInflater inflater=null;
-//
-//    HashSet<String> selectedBooks = new HashSet<String>();
-//
-//    //This listener will be used on all your checkboxes, there's no need to
-//    //create a listener for every checkbox.
-//    CompoundButton.OnCheckedChangeListener checkChangedListener = new CompoundButton.OnCheckedChangeListener{
-//        @Override
-//        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//            String bookDuration = (String) buttonView.getTag();
-//            if(isChecked){
-//                selectedBooks.add(bookDuration);
-//            }else{
-//                selectedBooks.remove(bookDuration);
-//            }
-//        }
-//    }
-//
-//
-//    public MylibmanList(Activity a, ArrayList<HashMap<String, String>> d) {
-//        activity = a;
-//        data=d;
-//        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//    }
-//
-//    static class ViewHolder {
-//        TextView title;
-//        TextView artist;
-//        TextView duration;
-//        CheckBox check;
-//    }
-//
-//
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        ViewHolder holder;
-//        if(convertView==null){
-//            convertView = inflater.inflate(R.layout.listrow_row, null);
-//
-//            holder = new ViewHolder();
-//            holder.title = (TextView) convertView.findViewById(R.id.title);
-//            holder.artist = (TextView) convertView.findViewById(R.id.artist);
-//            holder.duration = (TextView) convertView.findViewById(R.id.duration);
-//            holder.check = (CheckBox) convertView.findViewById(R.id.check);
-//
-//
-//            holder.check.setOnCheckedChangeListener(checkChangedListener);
-//
-//            convertView.setTag(holder);
-//        }else{
-//            holder = (ViewHolder) convertView.getTag();
-//        }
-//
-//
-//        HashMap<String, String> book = new HashMap<String, String>();
-//        book = (HashMap<String, String>) getItem(position);
-//
-//        holder.check.setTag(book.get(ShowList.LIST_KEY_ID));
-//
-//        holder.title.setText(book.get(ShowList.LIST_KEY_NAME));
-//        holder.artist.setText(book.get(ShowList.LIST_KEY_WRITER));
-//        holder.duration.setText(book.get(ShowList.LIST_KEY_ID));
-//
-//        boolean bookSelected = false;
-//        if(selectedBooks.contains(book.get(ShowList.LIST_KEY_ID))){
-//            bookSelected = true;
-//        }
-//
-//        holder.check.setChecked(bookSelected);
-//
-//        return convertView;
-//    }
-//}
+package com.example.myapplication;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
+public class MylibmanList extends BaseAdapter {
+    private Activity activity;
+    private ArrayList<HashMap<String, String>> data;
+    private static LayoutInflater inflater = null;
+    private ListView remindersList;
+
+    HashSet<String> selectedBooks = new HashSet<String>();
+
+    //This listener will be used on all your checkboxes, there's no need to
+    //create a listener for every checkbox.
+    CompoundButton.OnCheckedChangeListener checkChangedListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            String SelRem = (String) remindersList.getTag();
+            if (b) {
+                selectedBooks.add(SelRem);
+            } else {
+                selectedBooks.remove(SelRem);
+            }
+        }
+    };
+
+
+    public MylibmanList(Activity a, ArrayList<HashMap<String, String>> d) {
+        activity = a;
+        data = d;
+        inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    @Override
+    public int getCount() {
+        return 0;
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return null;
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return 0;
+    }
+
+    static class ViewHolder {
+        TextView id;
+        TextView content;
+        TextView important;
+        CheckBox check;
+    }
+
+
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.activity_listview, null);
+
+            holder = new ViewHolder();
+            holder.id = (TextView) convertView.findViewById(R.id.id_list);
+            holder.content = (TextView) convertView.findViewById(R.id.content_list);
+            holder.important = (TextView) convertView.findViewById(R.id.important_id);
+            holder.check = (CheckBox) convertView.findViewById(R.id.checkbox);
+
+
+            holder.check.setOnCheckedChangeListener(checkChangedListener);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+
+        HashMap<String, String> reminder = new HashMap<String, String>();
+        reminder = (HashMap<String, String>) getItem(position);
+
+        holder.check.setTag(reminder.get(RemindersDbAdapter.COL_IMPORTANT));
+
+        holder.id.setText(reminder.get(RemindersDbAdapter.COL_ID));
+        holder.content.setText(reminder.get(RemindersDbAdapter.COL_CONTENT));
+        holder.important.setText(reminder.get(RemindersDbAdapter.COL_IMPORTANT));
+
+        boolean bookSelected = false;
+        if (selectedBooks.contains(reminder.get(RemindersDbAdapter.COL_IMPORTANT))) {
+            bookSelected = true;
+        }
+
+        holder.check.setChecked(bookSelected);
+
+        return convertView;
+    }
+}
