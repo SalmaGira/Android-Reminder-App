@@ -61,12 +61,9 @@ public class RemindersDbAdapter {
           query = "insert into " + TABLE_NAME + "(" + COL_CONTENT + " " + COL_IMPORTANT + " )" +
                   " values(" + name + ", " + Boolean.toString(important) + ");";
           mDb.execSQL(query);
-//          close();
       }
       catch (Exception e){
-//          Toast.makeText(MainActivity.this, "ERROR "+e.toString(), Toast.LENGTH_SHORT).show();
       }
-//        Reminder reminder = new Reminder(1,name,1);
 
         // execSQL
     }
@@ -92,7 +89,6 @@ public class RemindersDbAdapter {
     public Reminder fetchReminderById(int id) {
         System.out.println(String.valueOf(id));
         open();
-        //Select * from Materials where Title=title AND Course_Code = CourseCode
         String query="Select * from "+TABLE_NAME +" where "+COL_ID +" = ? ";
         Cursor reminderCursor= mDb.rawQuery(query,  new String[] {String.valueOf(id)});
         reminderCursor.moveToFirst();
@@ -111,7 +107,6 @@ public class RemindersDbAdapter {
         open();
         query = "select * from " + TABLE_NAME;
         res = mDb.rawQuery(query, null);
-//        close();
 
         return res;
         // rawQuery get all
@@ -143,7 +138,6 @@ public class RemindersDbAdapter {
     public void deleteAllReminders() {
         try {
             open();
-//            mDb.delete(TABLE_NAME, COL_ID + " = ?", new String[] {Integer.toString(nId)});
             mDb.execSQL("delete from "+ TABLE_NAME);
         }
         catch (Exception e){

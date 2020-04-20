@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ public class MylibmanList extends BaseAdapter {
     private ArrayList<HashMap<String, String>> data;
     private static LayoutInflater inflater = null;
     private ListView remindersList;
+
+
 
     HashSet<String> selectedBooks = new HashSet<String>();
 
@@ -65,6 +68,7 @@ public class MylibmanList extends BaseAdapter {
         TextView content;
         TextView important;
         CheckBox check;
+        View viewColor;
     }
 
 
@@ -78,7 +82,7 @@ public class MylibmanList extends BaseAdapter {
             holder.content = (TextView) convertView.findViewById(R.id.content_list);
             holder.important = (TextView) convertView.findViewById(R.id.important_id);
             holder.check = (CheckBox) convertView.findViewById(R.id.checkbox);
-
+            holder.viewColor = (View) convertView.findViewById(R.id.color_item);
 
             holder.check.setOnCheckedChangeListener(checkChangedListener);
 
@@ -97,12 +101,19 @@ public class MylibmanList extends BaseAdapter {
         holder.content.setText(reminder.get(RemindersDbAdapter.COL_CONTENT));
         holder.important.setText(reminder.get(RemindersDbAdapter.COL_IMPORTANT));
 
-        boolean bookSelected = false;
+        boolean selected = false;
         if (selectedBooks.contains(reminder.get(RemindersDbAdapter.COL_IMPORTANT))) {
-            bookSelected = true;
+            selected = true;
         }
 
-        holder.check.setChecked(bookSelected);
+        if (holder.important.getText() == "1"){
+            holder.viewColor.setBackgroundColor(Color.RED);
+        }
+        else {
+            holder.viewColor.setBackgroundColor(Color.BLUE);
+        }
+
+        holder.check.setChecked(selected);
 
         return convertView;
     }

@@ -6,17 +6,25 @@
     android:orientation="horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <View
+        android:id="@+id/color_item"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:background="@color/green"
+        />
+
     <TextView
         android:id="@+id/id_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0" />
+        android:layout_weight="0"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/important_id"
-        android:layout_width="wrap_content"
+        android:layout_width="2dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="0" />
 
     <TextView
         android:id="@+id/content_list"

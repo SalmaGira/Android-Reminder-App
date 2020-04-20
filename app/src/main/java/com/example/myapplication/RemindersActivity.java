@@ -31,12 +31,10 @@ import java.util.HashSet;
 //import androidx.appcompat.app.AppCompatActivity;
 
 public class RemindersActivity extends AppCompatActivity {
-    String[] StringArray = {"Volvo", "BMW", "Ford", "Mazda"};
     RemindersDbAdapter db;
     Reminder reminder = new Reminder();
     private ListView remindersList;
     private RemindersSimpleCursorAdapter listAdapter;
-    MylibmanList adapter;
     @Override
     protected void onStop() {
         super.onStop();
@@ -50,14 +48,8 @@ public class RemindersActivity extends AppCompatActivity {
         db = new RemindersDbAdapter(this);
 
 
-//        StringArray = db.fetchAllReminders();
         Cursor cursor = db.fetchAllReminders();
         String preChanged = "Add reminders Please";//Replace row name with your row name
-//        if( cursor != null && cursor.moveToFirst() ){
-//            preChanged = cursor.getString(cursor.getColumnIndex("content"));
-//            cursor.close();
-//        }
-        //data base columns names
         String[] from = {
                 RemindersDbAdapter.COL_ID,
                 RemindersDbAdapter.COL_CONTENT ,
@@ -68,13 +60,10 @@ public class RemindersActivity extends AppCompatActivity {
                 R.id.content_list,
                 R.id.important_id};
 
-        //listAdapter = new RemindersSimpleCursorAdapter(this,R.layout.reminder_item,cursor,from,to,0);
         //if it didnt work use this
         listAdapter = new RemindersSimpleCursorAdapter(this,R.layout.activity_listview,cursor,from,to,0);
         remindersList = findViewById(R.id.listView1);
 
-        ArrayList<HashMap<String, String>> allReminders = new ArrayList<HashMap<String, String>>();
-        adapter=new MylibmanList(this, allReminders);
         ArrayAdapter<String> itemsAdapter;
 //        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listAdapter, adapter);
 
@@ -135,8 +124,6 @@ public class RemindersActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-//        AdapterView.AdapterContextMenuInfo info  = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-//        Reminder reminder = (Reminder)listAdapter.getItem(info.position);
         // menu item check handling
         switch (id) {
             case R.id.item1_dialog_custom:
@@ -197,7 +184,7 @@ public class RemindersActivity extends AppCompatActivity {
                         if (!reminderContent.equals(" "));
                             reminder.setContent(reminderContent);
                         reminder.setId(ID);
-                        int isSelected = checkBox.isSelected() ? 1 : 0;
+                        int isSelected = checkBox.isChecked() ? 1 : 0;
                         reminder.setImportant(isSelected);
                         Toast.makeText(RemindersActivity.this, String.valueOf(ID), Toast.LENGTH_SHORT).show();
                         if (type == 1) {
@@ -221,7 +208,5 @@ public class RemindersActivity extends AppCompatActivity {
             }
         }).show();
 
-//        TextView textView = (TextView)findViewById(R.id.important_id);
-//        textView.setBackgroundColor(Color.parseColor("#FFA500"));
     }
 }
